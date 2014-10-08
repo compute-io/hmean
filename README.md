@@ -1,7 +1,5 @@
-hmean
-=====
-
-====
+Harmonic Mean
+=============
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
 > Computes the harmonic mean over an array of values.
@@ -15,13 +13,38 @@ $ npm install compute-hmean
 
 ## Usage
 
+The use the module,
+
 ``` javascript
 var hmean = require( 'compute-hmean' );
 ```
 
+#### hmean( arr )
+
+Computes the harmonic mean.
+
+``` javascript
+var data = [ 1, 5, 3, 4, 16 ];
+
+var mu = hmean( data );
+// returns 
+```
+
+Note: only calculate the harmonic mean for positive, real numbers. 
+
+If an `array` contains negative numbers, the harmonic mean is nonsensical. For example, consider `x = [ 3, -3, 4 ]`. The harmonic mean of `x` is `12`, while the arithmetic mean is `1.33333...`. The harmonic mean should never be greater than the arithmetic mean. 
+
+Similarly, if an `array` contains zero values, the harmonic mean is also zero: `1/0 --> infinity` and `1/infinity --> 0`. For example, consider `x = [ 0, 100, 1000, 10000 ]`. Using the textbook definition of the harmonic mean, the mean would be `0`, which, given `x` does not make sense.
+
+If an `array` contains elements less than or equal to `0`, the function returns `NaN`.
+
+
+
 ## Examples
 
 ``` javascript
+var hmean = require( 'compute-hmean' );
+
 var data = new Array( 1000 );
 
 for ( var i = 0; i < data.length; i++ ) {

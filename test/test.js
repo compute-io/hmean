@@ -46,21 +46,30 @@ describe( 'compute-hmean', function tests() {
 	});
 
 	it( 'should compute the harmonic mean', function test() {
-		var data, expected;
+		var data, sum, expected;
 
 		data = [ 2, 4, 5, 3, 8, 2 ];
-		expected = 3.14410;
+		sum = 0;
+		for ( var i = 0; i < data.length; i++ ) {
+			sum += 1 / data[ i ];
+		}
+		expected = data.length / sum;
 
-		assert.closeTo( hmean( data ), expected, 0.0001 );
+		assert.closeTo( hmean( data ), expected, 1e-7 );
 	});
 
-		it( 'should handle values of 0', function test() {
-		var data, expected;
+	it( 'should return NaN if an array contains any values less than or equal to 0', function test() {
+		var data, actual;
 
 		data = [ 2, 4, 0, 3, 8, 2 ];
-		expected = 0;
+		actual = hmean( data );
 
-		assert.strictEqual( hmean( data ), expected );
+		assert.ok( typeof actual === 'number' && actual !== actual );
+
+		data = [ 2, 4, -10, 3, 8, 2 ];
+		actual = hmean( data );
+
+		assert.ok( typeof actual === 'number' && actual !== actual );
 	});
 
 });
