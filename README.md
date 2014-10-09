@@ -27,14 +27,14 @@ Computes the harmonic mean.
 var data = [ 1, 5, 3, 4, 16 ];
 
 var mu = hmean( data );
-// returns 
+// returns ~2.7088
 ```
 
 Note: only calculate the harmonic mean for positive, real numbers. 
 
 If an `array` contains negative numbers, the harmonic mean is nonsensical. For example, consider `x = [ 3, -3, 4 ]`. The harmonic mean of `x` is `12`, while the arithmetic mean is `1.33333...`. The harmonic mean should never be greater than the arithmetic mean. 
 
-Similarly, if an `array` contains zero values, the harmonic mean is also zero: `1/0 --> infinity` and `1/infinity --> 0`. For example, consider `x = [ 0, 100, 1000, 10000 ]`. Using the textbook definition of the harmonic mean, the mean would be `0`, which, given `x` does not make sense.
+Similarly, if an `array` contains zero values, the harmonic mean is also zero: `1/0 --> infinity` and `1/infinity --> 0`. For example, consider `x = [ 0, 100, 1000, 10000 ]`. Using the textbook definition of the harmonic mean, the mean would be `0`, which, given `x`, does not make sense.
 
 If an `array` contains elements less than or equal to `0`, the function returns `NaN`.
 
@@ -62,7 +62,7 @@ $ node ./examples/index.js
 
 ## Notes
 
-For arrays exceeding memory constraints, you are encouraged to use streams; see [flow-mean](https://github.com/flow-io/flow-hmean).
+For arrays exceeding memory constraints, you are encouraged to use streams; see [flow-hmean](https://github.com/flow-io/flow-hmean).
 
 
 ## Tests
@@ -89,7 +89,7 @@ $ make test-cov
 Istanbul creates a `./reports/coverage` directory. To access an HTML version of the report,
 
 ``` bash
-$ open reports/coverage/lcov-report/index.html
+$ make view-cov
 ```
 
 
