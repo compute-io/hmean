@@ -2,13 +2,13 @@ Harmonic Mean
 =============
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
-> Computes the harmonic mean.
+> Computes the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) mean.
 
-The [arithmetic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) is defined as
+The [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) is defined as
 
 <div class="equation" align="center" data-raw-text="
     H = \frac{N}{\sum_{i=0}^{N-1} \frac{1}{x_i}}" data-equation="eq:harmonic_mean">
-	<img src="" alt="Equation for the harmonic mean.">
+	<img src="https://cdn.rawgit.com/compute-io/hmean/203560bc5407a2d5b4879a42881545660a7fc7dd/docs/img/eqn1.svg" alt="Equation for the harmonic mean.">
 	<br>
 </div>
 
@@ -76,10 +76,10 @@ var mu = hmean( data, {
 
 If provided a [`matrix`](https://github.com/dstructs/matrix), the function accepts the following `options`:
 
-*	__dim__: dimension along which to compute the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean). Default: `2` (along the columns).
+*	__dim__: dimension along which to compute the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) . Default: `2` (along the columns).
 *	__dtype__: output [`matrix`](https://github.com/dstructs/matrix) data type. Default: `float64`.
 
-By default, the function computes the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) along the columns (`dim=2`).
+By default, the function computes the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) along the columns (`dim=2`).
 
 ``` javascript
 var matrix = require( 'dstructs-matrix' ),
@@ -111,7 +111,7 @@ mu = mean( mat );
 */
 ```
 
-To compute the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) along the rows, set the `dim` option to `1`.
+To compute the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean)  along the rows, set the `dim` option to `1`.
 
 ``` javascript
 mu = hmean( mat, {
