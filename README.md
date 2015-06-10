@@ -2,7 +2,7 @@ Harmonic Mean
 =============
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
-> Computes the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) mean.
+> Computes the [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean).
 
 The [harmonic mean](http://en.wikipedia.org/wiki/Harmonic_mean) is defined as
 
