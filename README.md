@@ -101,7 +101,7 @@ mat = matrix( data, [5,5], 'int8' );
 	  20 21 22 23 24 ]
 */
 
-mu = mean( mat );
+mu = hmean( mat );
 /*
 	[  NaN
 	   6.706
