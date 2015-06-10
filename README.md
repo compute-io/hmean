@@ -2,8 +2,17 @@ Harmonic Mean
 =============
 [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage][coveralls-image]][coveralls-url] [![Dependencies][dependencies-image]][dependencies-url]
 
-> Computes the harmonic mean over an array of values.
+> Computes the harmonic mean.
 
+The [arithmetic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) is defined as
+
+<div class="equation" align="center" data-raw-text="
+    H = \frac{N}{\sum_{i=0}^{N-1} \frac{1}{x_i}}" data-equation="eq:harmonic_mean">
+	<img src="" alt="Equation for the harmonic mean.">
+	<br>
+</div>
+
+where `x_0, x_1,...,x_{N-1}` are individual data values and `N` is the total number of values in the data set.
 
 ## Installation
 
@@ -13,45 +22,209 @@ $ npm install compute-hmean
 
 ## Usage
 
-The use the module,
 
 ``` javascript
 var hmean = require( 'compute-hmean' );
 ```
 
-#### hmean( arr )
+#### hmean( x[, opts] )
 
-Computes the harmonic mean.
+Computes the harmonic mean. `x` may be either an [`array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array), [`typed array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays), or [`matrix`](https://github.com/dstructs/matrix).
+
 
 ``` javascript
-var data = [ 1, 5, 3, 4, 16 ];
+var data, mu;
 
-var mu = hmean( data );
+data = [ 1, 5, 3, 4, 16 ];
+mu = hmean( data );
+// returns ~2.7088
+
+data = new Int8Array( data );
+mu = mean( data );
 // returns ~2.7088
 ```
 
-Note: only calculate the harmonic mean for positive, real numbers. 
+Note: only calculate the harmonic mean for positive, real numbers.
 
-If an `array` contains negative numbers, the harmonic mean is nonsensical. For example, consider `x = [ 3, -3, 4 ]`. The harmonic mean of `x` is `12`, while the arithmetic mean is `1.33333...`. The harmonic mean should never be greater than the arithmetic mean. 
+If an `array` contains negative numbers, the harmonic mean is nonsensical. For example, consider `x = [ 3, -3, 4 ]`. The harmonic mean of `x` is `12`, while the arithmetic mean is `1.33333...`. The harmonic mean should never be greater than the arithmetic mean.
 
 Similarly, if an `array` contains zero values, the harmonic mean is also zero: `1/0 --> infinity` and `1/infinity --> 0`. For example, consider `x = [ 0, 100, 1000, 10000 ]`. Using the textbook definition of the harmonic mean, the mean would be `0`, which, given `x`, does not make sense.
 
 If an `array` contains elements less than or equal to `0`, the function returns `NaN`.
 
+For non-numeric `arrays`, provide an accessor `function` for accessing `array` values.
 
+``` javascript
+var data = [
+	{'x':2},
+	{'x':4},
+	{'x':5},
+	{'x':3},
+	{'x':8},
+	{'x':2}
+];
+
+function getValue( d, i ) {
+	return d.x;
+}
+
+var mu = hmean( data, {
+	'accessor': getValue
+});
+// returns ~3.144
+```
+
+If provided a [`matrix`](https://github.com/dstructs/matrix), the function accepts the following `options`:
+
+*	__dim__: dimension along which to compute the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean). Default: `2` (along the columns).
+*	__dtype__: output [`matrix`](https://github.com/dstructs/matrix) data type. Default: `float64`.
+
+By default, the function computes the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) along the columns (`dim=2`).
+
+``` javascript
+var matrix = require( 'dstructs-matrix' ),
+	data,
+	mat,
+	mu,
+	i;
+
+data = new Int8Array( 25 );
+for ( i = 0; i < data.length; i++ ) {
+	data[ i ] = i;
+}
+mat = matrix( data, [5,5], 'int8' );
+/*
+	[  0  1  2  3  4
+	   5  6  7  8  9
+	  10 11 12 13 14
+	  15 16 17 18 19
+	  20 21 22 23 24 ]
+*/
+
+mu = mean( mat );
+/*
+	[  NaN
+	   6.706
+	  11.832
+	  16.882
+	  21.909 ]
+*/
+```
+
+To compute the [harmonic mean](http://en.wikipedia.org/wiki/Arithmetic_mean) along the rows, set the `dim` option to `1`.
+
+``` javascript
+mu = hmean( mat, {
+	'dim': 1
+});
+/*
+	[ NaN, 3.656, 6.021, 7.883, 9.491 ]
+*/
+```
+
+By default, the output [`matrix`](https://github.com/dstructs/matrix) data type is `float64`. To specify a different output data type, set the `dtype` option.
+
+``` javascript
+mu = hmean( mat, {
+	'dim': 1,
+	'dtype': 'uint8'
+});
+/*
+	[ 0, 3, 6, 7, 9 ]
+*/
+
+var dtype = mu.dtype;
+// returns 'uint8'
+```
+
+Note: `NaN` will be coerced to `0` for [`typed arrays`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays) of type integer. Only typed arrays of type `float64` and `float32` can hold `NaN` values.
+
+If provided a [`matrix`](https://github.com/dstructs/matrix) having either dimension equal to `1`, the function treats the [`matrix`](https://github.com/dstructs/matrix) as a [`typed array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays) and returns a `numeric` value.
+
+``` javascript
+data = [ 2, 4, 5, 3, 8, 2 ];
+
+// Row vector:
+mat = matrix( new Int8Array( data ), [1,6], 'int8' );
+mu = hmean( mat );
+// returns ~3.144
+
+// Column vector:
+mat = matrix( new Int8Array( data ), [6,1], 'int8' );
+mu = hmean( mat );
+// returns ~3.144
+```
+
+If provided an empty [`array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array), [`typed array`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays), or [`matrix`](https://github.com/dstructs/matrix), the function returns `null`.
+
+``` javascript
+mu = hmean( [] );
+// returns null
+
+mu = hmean( new Int8Array( [] ) );
+// returns null
+
+mu = hmean( matrix( [0,0] ) );
+// returns null
+
+mu = hmean( matrix( [0,10] ) );
+// returns null
+
+mu = hmean( matrix( [10,0] ) );
+// returns null
+```
 
 ## Examples
 
 ``` javascript
-var hmean = require( 'compute-hmean' );
+var matrix = require( 'dstructs-matrix' ),
+	hmean = require( 'compute-hmean' );
 
-var data = new Array( 1000 );
+var data,
+	mat,
+	mu,
+	i;
 
-for ( var i = 0; i < data.length; i++ ) {
+// Plain arrays...
+data = new Array( 1000 );
+for ( i = 0; i < data.length; i++ ) {
 	data[ i ] = Math.random() * 100;
 }
+mu = hmean( data );
 
-console.log( hmean( data ) );
+// Object arrays (accessors)...
+function getValue( d ) {
+	return d.x;
+}
+for ( i = 0; i < data.length; i++ ) {
+	data[ i ] = { 'x': data[ i ] };
+}
+mu = hmean( data, {
+	'accessor': getValue
+});
+
+// Typed arrays...
+data = new Int32Array( 1000 );
+for ( i = 0; i < data.length; i++ ) {
+	data[ i ] = Math.random() * 100;
+}
+mu = hmean( data );
+
+// Matrices (along rows)...
+mat = matrix( data, [100,10], 'int32' );
+mu = hmean( mat, {
+	'dim': 1
+});
+
+// Matrices (along columns)...
+mu = hmean( mat, {
+	'dim': 2
+});
+
+// Matrices (custom output data type)...
+mu = hmean( mat, {
+	'dtype': 'uint8'
+});
 ```
 
 To run the example code from the top-level application directory,
@@ -69,7 +242,7 @@ For arrays exceeding memory constraints, you are encouraged to use streams; see 
 
 ### Unit
 
-Unit tests use the [Mocha](http://visionmedia.github.io/mocha) test framework with [Chai](http://chaijs.com) assertions. To run the tests, execute the following command in the top-level application directory:
+Unit tests use the [Mocha](http://mochajs.org) test framework with [Chai](http://chaijs.com) assertions. To run the tests, execute the following command in the top-level application directory:
 
 ``` bash
 $ make test
@@ -93,16 +266,15 @@ $ make view-cov
 ```
 
 
+---
 ## License
 
-[MIT license](http://opensource.org/licenses/MIT). 
+[MIT license](http://opensource.org/licenses/MIT).
 
 
----
 ## Copyright
 
-Copyright &copy; 2014. Rebekah Smith.
-
+Copyright &copy; 2014-2015. The [Compute.io](https://github.com/compute-io) Authors.
 
 
 [npm-image]: http://img.shields.io/npm/v/compute-hmean.svg
