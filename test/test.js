@@ -1,8 +1,13 @@
+/* global describe, it, require */
+'use strict';
 
 // MODULES //
 
 var // Expectation library:
 	chai = require( 'chai' ),
+
+	// Matrix data structure:
+	matrix = require( 'dstructs-matrix' ),
 
 	// Module to be tested:
 	hmean = require( './../lib' );
@@ -17,23 +22,22 @@ var expect = chai.expect,
 // TESTS //
 
 describe( 'compute-hmean', function tests() {
-	'use strict';
 
 	it( 'should export a function', function test() {
 		expect( hmean ).to.be.a( 'function' );
 	});
 
-	it( 'should throw an error if provided a non-array', function test() {
+	it( 'should throw an error if the first argument is neither array-like or matrix-like', function test() {
 		var values = [
-				'5',
-				5,
-				true,
-				undefined,
-				null,
-				NaN,
-				function(){},
-				{}
-			];
+			// '5', // valid as is array-like (length)
+			5,
+			true,
+			undefined,
+			null,
+			NaN,
+			function(){},
+			{}
+		];
 
 		for ( var i = 0; i < values.length; i++ ) {
 			expect( badValue( values[i] ) ).to.throw( TypeError );
@@ -45,10 +49,54 @@ describe( 'compute-hmean', function tests() {
 		}
 	});
 
+	it( 'should throw an error if provided a dimension which is greater than 2 when provided a matrix', function test() {
+		var values = [
+			'5',
+			5,
+			true,
+			undefined,
+			null,
+			NaN,
+			[],
+			{},
+			function(){}
+		];
+
+		for ( var i = 0; i < values.length; i++ ) {
+			expect( badValue( values[i] ) ).to.throw( Error );
+		}
+		function badValue( value ) {
+			return function() {
+				hmean( matrix( [2,2] ), {
+					'dim': value
+				});
+			};
+		}
+	});
+
+	it( 'should throw an error if provided an unrecognized/unsupported data type option', function test() {
+		var values = [
+			'beep',
+			'boop'
+		];
+
+		for ( var i = 0; i < values.length; i++ ) {
+			expect( badValue( values[i] ) ).to.throw( Error );
+		}
+		function badValue( value ) {
+			return function() {
+				hmean( matrix( [2,2] ), {
+					'dtype': value
+				});
+			};
+		}
+	});
+
 	it( 'should compute the harmonic mean', function test() {
-		var data, sum, expected;
+		var data, expected, sum;
 
 		data = [ 2, 4, 5, 3, 8, 2 ];
+
 		sum = 0;
 		for ( var i = 0; i < data.length; i++ ) {
 			sum += 1 / data[ i ];
@@ -58,18 +106,103 @@ describe( 'compute-hmean', function tests() {
 		assert.closeTo( hmean( data ), expected, 1e-7 );
 	});
 
-	it( 'should return NaN if an array contains any values less than or equal to 0', function test() {
-		var data, actual;
+	it( 'should compute the harmonic mean of a typed array', function test() {
+		var data, expected, sum;
 
-		data = [ 2, 4, 0, 3, 8, 2 ];
-		actual = hmean( data );
+		data = new Int8Array( [ 2, 4, 5, 3, 8, 2 ] );
 
-		assert.ok( typeof actual === 'number' && actual !== actual );
+		sum = 0;
+		for ( var i = 0; i < data.length; i++ ) {
+			sum += 1 / data[ i ];
+		}
+		expected = data.length / sum;
 
-		data = [ 2, 4, -10, 3, 8, 2 ];
-		actual = hmean( data );
+		assert.closeTo( hmean( data ), expected, 1e-7  );
+	});
 
-		assert.ok( typeof actual === 'number' && actual !== actual );
+	it( 'should compute the harmonic mean using an accessor function', function test() {
+		var data, expected, actual, sum;
+
+		data = [
+			{'x':2},
+			{'x':4},
+			{'x':5},
+			{'x':3},
+			{'x':8},
+			{'x':2}
+		];
+
+		sum = 0;
+		for ( var i = 0; i < data.length; i++ ) {
+			sum += 1 / getValue( data[ i ] );
+		}
+		expected = data.length / sum;
+
+		actual = hmean( data, {
+			'accessor': getValue
+		});
+
+		assert.strictEqual( actual, expected );
+
+		function getValue( d ) {
+			return d.x;
+		}
+	});
+
+	it( 'should compute the harmonic mean along a matrix dimension', function test() {
+		var expected,
+			data,
+			mat,
+			mu,
+			i;
+
+		data = new Int8Array( 25 );
+		for ( i = 0; i < data.length; i++ ) {
+			data[ i ] = i;
+		}
+		mat = matrix( data, [5,5], 'int8' );
+
+		// Default:
+		mu = hmean( mat );
+		expected = 'NaN;6.70569451836083;11.831685118789647;16.881778190740285;21.908826622131503';
+
+		assert.strictEqual( mu.toString(), expected, 'default' );
+
+		// Along columns:
+		mu = hmean( mat, {
+			'dim': 2
+		});
+		expected = 'NaN;6.70569451836083;11.831685118789647;16.881778190740285;21.908826622131503';
+
+		assert.strictEqual( mu.toString(), expected, 'dim: 2' );
+
+		// Along rows:
+		mu = hmean( mat, {
+			'dim': 1
+		});
+		expected = 'NaN,3.6557863501483676,6.0206975852817175,7.882826803368729,9.490584737363726';
+
+		assert.strictEqual( mu.toString(), expected, 'dim: 1' );
+	});
+
+	it( 'should compute the harmonic mean of 1d matrices (vectors)', function test() {
+		var data, mat, sum, expected;
+
+		data = [ 2, 4, 5, 3, 8, 2 ];
+
+		sum = 0;
+		for ( var i = 0; i < data.length; i++ ) {
+			sum += 1 / data[ i ];
+		}
+		expected = data.length / sum;
+
+		// Row vector:
+		mat = matrix( data, [1,6], 'int8' );
+		assert.closeTo( hmean( mat ), expected, 1e-7 );
+
+		// Column vector:
+		mat = matrix( data, [6,1], 'int8' );
+		assert.closeTo( hmean( mat ), expected, 1e-7 );
 	});
 
 });
