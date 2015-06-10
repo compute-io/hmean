@@ -40,7 +40,7 @@ mu = hmean( data );
 // returns ~2.7088
 
 data = new Int8Array( data );
-mu = mean( data );
+mu = hmean( data );
 // returns ~2.7088
 ```
 

@@ -10,7 +10,7 @@ var // Expectation library:
 	matrix = require( 'dstructs-matrix' ),
 
 	// Module to be tested:
-	gmean = require( './../lib/matrix.js' );
+	hmean = require( './../lib/matrix.js' );
 
 
 // VARIABLES //
@@ -21,7 +21,7 @@ var expect = chai.expect,
 
 // TESTS //
 
-describe( 'matrix geometric mean', function tests() {
+describe( 'matrix harmonic mean', function tests() {
 
 	var data,
 		mat,
@@ -37,21 +37,21 @@ describe( 'matrix geometric mean', function tests() {
 	});
 
 	it( 'should export a function', function test() {
-		expect( gmean ).to.be.a( 'function' );
+		expect( hmean ).to.be.a( 'function' );
 	});
 
-	it( 'should compute the geometric mean along matrix columns', function test() {
+	it( 'should compute the harmonic mean along matrix columns', function test() {
 		var out, mu, expected;
 
 		out = matrix( [5,1], 'int8' );
 
 		// NaN converted to 0 for int8 array
-		mu = gmean( out, mat );
+		mu = hmean( out, mat );
 		expected = '0;6;11;16;21';
 
 		assert.strictEqual( mu.toString(), expected );
 
-		mu = gmean( out, mat, 2 );
+		mu = hmean( out, mat, 2 );
 		expected = '0;6;11;16;21';
 
 		assert.strictEqual( mu.toString(), expected );
@@ -60,18 +60,18 @@ describe( 'matrix geometric mean', function tests() {
 		mat.strides[ 0 ] *= -1;
 		mat.offset = mat.length + mat.strides[ 0 ];
 
-		mu = gmean( out, mat );
+		mu = hmean( out, mat );
 		expected = '21;16;11;6;0';
 
 		assert.strictEqual( mu.toString(), expected, 'flipud' );
 	});
 
-	it( 'should compute the geometric mean along matrix rows', function test() {
+	it( 'should compute the harmonic mean along matrix rows', function test() {
 		var out, mu, expected;
 
 		out = matrix( [1,5], 'int8' );
 
-		mu = gmean( out, mat, 1 );
+		mu = hmean( out, mat, 1 );
 		expected = '0,3,6,7,9';
 
 		assert.strictEqual( mu.toString(), expected );
@@ -80,7 +80,7 @@ describe( 'matrix geometric mean', function tests() {
 		mat.strides[ 1 ] *= -1;
 		mat.offset = mat.strides[ 0 ] - 1;
 
-		mu = gmean( out, mat, 1 );
+		mu = hmean( out, mat, 1 );
 		expected = '9,7,6,3,0';
 
 		assert.strictEqual( mu.toString(), expected, 'fliplr' );
@@ -92,13 +92,13 @@ describe( 'matrix geometric mean', function tests() {
 		out = matrix( [0,0] );
 
 		mat = matrix( [0,10] );
-		assert.isNull( gmean( out, mat ) );
+		assert.isNull( hmean( out, mat ) );
 
 		mat = matrix( [10,0] );
-		assert.isNull( gmean( out, mat ) );
+		assert.isNull( hmean( out, mat ) );
 
 		mat = matrix( [0,0] );
-		assert.isNull( gmean( out, mat ) );
+		assert.isNull( hmean( out, mat ) );
 	});
 
 });
